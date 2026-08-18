@@ -82,6 +82,7 @@ app.get("/auth/kakao/callback", async (req, res) => {
       }
     );
 
+    
     const kakaoAccount = userResponse.data.kakao_account || {};
     const nickname = kakaoAccount.profile?.nickname || "(닉네임 없음)";
     const email = kakaoAccount.email || "(이메일 제공 동의 안 함)";
