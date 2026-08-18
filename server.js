@@ -1,5 +1,5 @@
-// KAAC Symbols Search - 카카오 로그인 + 실제 디자인 반영 서버
-// 흐름: 로그인 화면(①) -> 카카오 인증 -> 콜백 -> 추가정보 입력 화면(②)로 자동 이동
+// KAAC Symbols Search 서버
+// ① 회원가입 랜딩(소셜 버튼 + 이메일/비밀번호 직접입력) -> ② 추가정보 입력 화면
 
 require("dotenv").config();
 const express = require("express");
@@ -10,9 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY;
 const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI;
-const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET; // 클라이언트 시크릿을 켜둔 경우에만 사용
+const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
 
-// ---------- 공통 스타일 (두 화면이 같은 헤더/폰트를 쓰므로 하나로 묶어둠) ----------
 const commonStyle = `
   * { box-sizing: border-box; }
   body { font-family: "Pretendard", -apple-system, sans-serif; margin: 0; background: #F3F4F6; color:#111; }
@@ -27,44 +26,44 @@ const commonStyle = `
   .avatar { width:32px; height:32px; border-radius:50%; background:#6b7280; display:flex; align-items:center; justify-content:center; color:#fff; }
 `;
 
-// ---------- ① 로그인 화면 ----------
+// ---------- ① 회원가입 랜딩 화면 ----------
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html lang="ko">
     <head>
       <meta charset="UTF-8">
-      <title>KAAC Symbols Search - 로그인</title>
+      <title>KAAC Symbols Search - 회원가입</title>
       <style>
         ${commonStyle}
         .wrap { display:flex; justify-content:center; padding-top:70px; }
         .box { width:330px; text-align:center; }
         .sub-logo { font-size:15px; color:#333; margin-bottom:14px; }
-        h1 { font-size:26px; line-height:1.35; margin:0 0 28px; }
+        h1 { font-size:24px; margin:0 0 28px; }
         .social-btn {
-          width:100%; padding:13px; border-radius:8px; font-size:15px; font-weight:700;
+          width:100%; padding:12px; border-radius:8px; font-size:14px; font-weight:600;
           margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px;
           cursor:pointer; text-decoration:none; border:none;
         }
         .kakao { background:#FEE500; color:#111; }
         .naver { background:#03C75A; color:#fff; }
         .google { background:#fff; color:#111; border:1px solid #e5e7eb; }
-        .icon-box { width:18px; height:18px; border-radius:3px; background:#fff; color:#03C75A; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; }
-        .divider { display:flex; align-items:center; gap:10px; margin:22px 0; color:#9ca3af; font-size:13px; }
+        .icon-box { width:16px; height:16px; border-radius:3px; background:#fff; color:#03C75A; font-weight:800; font-size:11px; display:flex; align-items:center; justify-content:center; }
+        .divider { display:flex; align-items:center; gap:10px; margin:20px 0; color:#9ca3af; font-size:13px; }
         .divider::before, .divider::after { content:""; flex:1; height:1px; background:#e5e7eb; }
         input {
-          width:100%; padding:13px 14px; border-radius:8px; border:none;
+          width:100%; padding:12px 14px; border-radius:8px; border:none;
           background:#EEF0FB; margin-bottom:10px; font-size:14px; color:#333;
         }
         .pw-wrap { position:relative; }
-        .pw-wrap span { position:absolute; right:14px; top:14px; color:#9ca3af; cursor:pointer; }
+        .pw-wrap span { position:absolute; right:14px; top:13px; color:#9ca3af; cursor:pointer; }
         .main-btn {
-          width:100%; padding:13px; border-radius:8px; border:none; background:#1D5FE0;
-          color:#fff; font-size:15px; font-weight:700; cursor:pointer; margin-top:4px;
+          width:100%; padding:12px; border-radius:8px; border:none; background:#1D5FE0;
+          color:#fff; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px;
         }
-        .links { margin-top:16px; font-size:13px; }
-        .links a { color:#1D5FE0; text-decoration:none; }
-        .sub-link { margin-top:8px; color:#555; }
+        .footer-link { margin-top:20px; font-size:13px; color:#555; }
+        .footer-link a { color:#1D5FE0; text-decoration:none; }
+        .terms { margin-top:40px; font-size:11px; color:#aaa; }
       </style>
     </head>
     <body>
@@ -76,35 +75,50 @@ app.get("/", (req, res) => {
       <div class="wrap">
         <div class="box">
           <div class="sub-logo">KAAC Symbols Search</div>
-          <h1>Symbols Search에 오신 것을<br>환영합니다</h1>
+          <h1>회원가입을 진행해주세요</h1>
 
-          <a href="/auth/kakao" class="social-btn kakao">💬 카카오 로그인</a>
-          <a href="/auth/naver" class="social-btn naver"><span class="icon-box">N</span> 네이버 로그인</a>
-          <a href="/auth/google" class="social-btn google">🔵 Google 로그인</a>
+          <a href="/auth/kakao" class="social-btn kakao">💬 카카오로 시작하기</a>
+          <a href="/auth/naver" class="social-btn naver"><span class="icon-box">N</span> 네이버로 시작하기</a>
+          <a href="/auth/google" class="social-btn google">🔵 Google로 시작하기</a>
 
           <div class="divider">or</div>
 
-          <input type="email" placeholder="이메일" />
-          <div class="pw-wrap">
-            <input type="password" placeholder="비밀번호" />
-            <span>👁</span>
-          </div>
-          <button class="main-btn">로그인</button>
+          <!--
+            이 폼은 카카오 로그인과 달리, 사용자가 직접 이메일/비밀번호를 우리 사이트에 입력하는 경로예요.
+            그래서 "계속" 누르면 그 값을 그대로 다음 화면(/signup-info)으로 넘겨서 채워줄 수 있어요.
+            (카카오 로그인은 반대로 비밀번호를 우리가 절대 알 수 없는 구조라 이 방식이 아예 불가능해요)
+          -->
+          <form action="/signup-info" method="GET">
+            <input type="email" name="email" placeholder="이메일" required />
+            <div class="pw-wrap">
+              <input type="password" name="password" placeholder="비밀번호" required />
+              <span onclick="togglePw(this)">👁</span>
+            </div>
+            <button type="submit" class="main-btn">계속</button>
+          </form>
 
-          <div class="links"><a href="#">비밀번호를 잊으셨나요?</a></div>
-          <div class="links sub-link">아직 계정이 없으신가요? <a href="#">계정 만들기</a></div>
+          <div class="footer-link">이미 계정이 있으신가요? <a href="#">로그인하기</a></div>
+          <div class="terms">계속 진행하면 이용 약관 및 개인정보 처리방침에 동의하는 것으로 간주됩니다.</div>
         </div>
       </div>
+
+      <script>
+        function togglePw(el) {
+          const input = el.previousElementSibling;
+          input.type = input.type === "password" ? "text" : "password";
+        }
+      </script>
     </body>
     </html>
   `);
 });
 
 // ---------- ② 추가정보 입력(회원가입) 화면 ----------
-// 카카오 로그인에 성공하면 이 화면으로 넘어오고, 이메일 칸에 카카오 이메일이 미리 채워져 있어요.
 app.get("/signup-info", (req, res) => {
   const email = req.query.email || "";
+  const password = req.query.password || ""; // 직접 입력 경로에서만 값이 있음
   const nickname = req.query.nickname || "";
+  const isSocial = !password && email; // 이메일은 있는데 비밀번호가 없으면 소셜 로그인 경로로 판단
 
   res.send(`
     <!DOCTYPE html>
@@ -125,7 +139,8 @@ app.get("/signup-info", (req, res) => {
           padding:6px 2px 10px; font-size:15px; color:#111; outline:none;
         }
         .field input::placeholder { color:#9ca3af; }
-        .field input[readonly] { color:#374151; text-decoration:underline; }
+        .field input[readonly], .field input[data-filled="true"] { color:#374151; text-decoration:underline; }
+        .hint { font-size:12px; color:#9ca3af; margin-top:4px; }
         .select-wrap { position:relative; }
         .select-wrap::after { content:"⌄"; position:absolute; right:4px; top:0; color:#6b7280; font-size:16px; }
         .select-wrap select { appearance:none; -webkit-appearance:none; }
@@ -150,20 +165,32 @@ app.get("/signup-info", (req, res) => {
 
           <div class="field">
             <label>아이디(이메일 주소)</label>
-            <input type="email" value="${email}" ${email ? "readonly" : ""} placeholder="이메일을 입력해주세요" />
+            <input type="email" value="${email}" ${email ? 'readonly data-filled="true"' : ""} placeholder="이메일을 입력해주세요" />
           </div>
+
           <div class="field">
             <label>비밀번호</label>
-            <input type="password" placeholder="${email ? "소셜 로그인은 비밀번호가 필요 없어요" : "비밀번호를 입력해주세요"}" ${email ? "disabled" : ""} />
+            ${
+              isSocial
+                ? `<input type="password" placeholder="소셜 로그인은 비밀번호가 필요 없어요" disabled />`
+                : `<input type="password" value="${password}" ${password ? 'data-filled="true"' : ""} placeholder="비밀번호를 입력해주세요" />`
+            }
           </div>
+
           <div class="field">
             <label>비밀번호 확인</label>
-            <input type="password" ${email ? "disabled" : ""} />
+            ${
+              isSocial
+                ? `<input type="password" disabled />`
+                : `<input type="password" value="${password}" ${password ? 'data-filled="true"' : ""} />`
+            }
           </div>
+
           <div class="field">
             <label>이름</label>
             <input type="text" value="${nickname}" placeholder="이름을 입력해주세요" />
           </div>
+
           <div class="field select-wrap">
             <label>유형</label>
             <select>
@@ -203,7 +230,7 @@ app.get("/auth/kakao", (req, res) => {
   res.redirect(kakaoAuthURL);
 });
 
-// ---------- 카카오 로그인 콜백: 성공하면 ②(추가정보 입력)로 자동 이동 ----------
+// ---------- 카카오 로그인 콜백 ----------
 app.get("/auth/kakao/callback", async (req, res) => {
   const code = req.query.code;
 
@@ -237,8 +264,7 @@ app.get("/auth/kakao/callback", async (req, res) => {
     const nickname = kakaoAccount.profile?.nickname || "";
     const email = kakaoAccount.email || "";
 
-    // 여기가 핵심: ②번 화면(추가정보 입력)으로 자동 이동시키면서,
-    // 카카오에서 받은 이메일/닉네임을 그 화면에 미리 채워줘요.
+    // 카카오 경로는 password 파라미터를 아예 안 실어 보냄 (비밀번호를 알 방법이 없으므로)
     res.redirect(
       `/signup-info?email=${encodeURIComponent(email)}&nickname=${encodeURIComponent(nickname)}`
     );
