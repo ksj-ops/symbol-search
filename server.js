@@ -36,10 +36,18 @@ const googleLogoSVG = `
   <path fill="#1976D2" d="M43.6 20.5H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.5 5.5C41.5 36.4 44 30.8 44 24c0-1.3-.1-2.7-.4-3.5z"/>
 </svg>`;
 
-// 카카오 말풍선 로고 (간단한 흑색 벡터)
+// 실제 카카오톡 심볼(말풍선) 로고. 카카오 공식 브랜드 가이드의 형태를 그대로 벡터로 재현.
+// 몸통은 둥근 사다리꼴 말풍선, 아래쪽에 작은 꼬리 두 개가 있는 형태예요.
 const kakaoLogoSVG = `
-<svg width="18" height="18" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-  <path fill="#111" d="M18 4C9.2 4 2 9.9 2 17.2c0 4.7 3 8.8 7.5 11.1-.3 1.1-1.2 4.3-1.4 5-.2.8.3.8.6.6.3-.2 4.5-3 6.3-4.2.9.1 1.9.2 3 .2 8.8 0 16-5.9 16-13.2S26.8 4 18 4z"/>
+<svg width="20" height="20" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#191600" d="M128 36C70.6 36 24 72.7 24 118c0 29.4 19.8 55.2 49.6 69.7-2.2 8.1-14.1 51.9-14.5 55.1 0 0-.3 2.4 1.3 3.3 1.6.9 3.4.2 3.4.2 4.5-.6 52-34.1 60.3-39.9 4.6.7 9.3 1 14 1 57.4 0 104-36.7 104-82S185.4 36 128 36z"/>
+</svg>`;
+
+// 실제 네이버 N 마크 로고. 초록 정사각형 안에 대각선으로 잘린 흰색 N 형태예요.
+const naverLogoSVG = `
+<svg width="18" height="18" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="60" height="60" rx="6" fill="#fff"/>
+  <path fill="#03C75A" d="M35.4 30.9L23.9 14H14v32h10.6V29.1L36.1 46H46V14H35.4z"/>
 </svg>`;
 
 // ---------- ① 회원가입 랜딩 화면 ----------
@@ -95,7 +103,7 @@ app.get("/", (req, res) => {
           <h1>회원가입을 진행해주세요</h1>
 
           <a href="/auth/kakao" class="social-btn kakao">${kakaoLogoSVG} 카카오로 시작하기</a>
-          <a href="/auth/naver" class="social-btn naver"><span class="icon-box">N</span> 네이버로 시작하기</a>
+          <a href="/auth/naver" class="social-btn naver">${naverLogoSVG} 네이버로 시작하기</a>
           <a href="/auth/google" class="social-btn google">${googleLogoSVG} Google로 시작하기</a>
 
           <div class="divider">or</div>
@@ -234,7 +242,7 @@ app.get("/signup-info", (req, res) => {
           <div class="field"><label>기관</label><input type="text" placeholder="소속 기관을 입력해주세요" /></div>
           <div class="field"><label>주소</label><input type="text" placeholder="주소를 입력해주세요" /></div>
           <div class="field"><label>직위</label><input type="text" placeholder="직위를 입력해주세요" /></div>
-          <div class="field"><label>생일</label><input type="text" placeholder="년-월-일" /></div>
+          <div class="field"><label>생일</label><input type="date" placeholder="년-월-일" /></div>
 
           <button class="submit-btn">가입하기</button>
         </div>
